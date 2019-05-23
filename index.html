@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>World Draw</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="canvas" width="1000" height="1000"  style="background: #D6F8FF"></canvas>
+<script src='http://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js'></script>
+<script>
+    const canvas = document.querySelector('#canvas');
+    const context = canvas.getContext('2d');
+    context.antialias = true;
+    context.strokeStyle = 'red';
+    context.lineWidth = 5;
+    context.lineJoin = 'round';
+    context.lineCap = 'round';
+
+    let DrawingPad = {
+        init: function (canvas, context) {
+            this.canvas = canvas;
+            this.context = context;
+            this.isDown = false;
+            this.linesX = [];
+            this.linesY = [];
+            this.x = [];
+            this.y = [];
+            this.count = 0;
+            this.linesCount = 0;
+            this.addCanvasEvents();
+        },
+        addCanvasEvents: function () {
+            this.canvas.addEventListener('mousedown', this.down.bind(this),false);
+            this.canvas.addEventListener('mousemove', this.move.bind(this), false);
+            this.canvas.addEventListener('mouseup', this.up.bind(this), false);
+            this.canvas.addEventListener('mouseout', this.up.bind(this), false);
+        },
+        down: function (evt) {
+            this.isDown = true;
+            this.count++;
+            if (this.count === 2){
+                this.points = this.getPos(evt);
+                this.x.push(this.points.x);
+                this.y.push(this.points.y);
+                this.linesX[this.linesCount] = this.x;
+                this.linesY[this.linesCount] = this.y;
+                this.drawLine();
+                this.count=0;
+            }
+        },
+        move: function (evt) {
+            if (!this.isDown) return;
+            this.count++;
+            if (this.count === 4){
+                this.points = this.getPos(evt);
+                this.x.push(this.points.x);
+                this.y.push(this.points.y);
+                this.linesX[this.linesCount] = this.x;
+                this.linesY[this.linesCount] = this.y;
+                this.drawLine();
+                this.count=0;
+            }
+        },
+        up: function (evt) {
+            if (!this.isDown) return;
+            this.points = this.getPos(evt);
+            this.x.push(this.points.x);
+            this.y.push(this.points.y);
+            this.linesX[this.linesCount] = this.x;
+            this.linesY[this.linesCount] = this.y;
+            this.drawLine();
+            this.count = 0;
+            this.linesCount++;
+            this.isDown = false;
+            this.x = [];
+            this.y = [];
+        },
+        getPos: function (evt) {
+            return {
+                x: evt.clientX,
+                y: evt.clientY
+            }
+        },
+        drawLine: function () {
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            for (let i=0; i <= this.linesCount; i++) {
+                this.context.beginPath();
+                this.Cubic_B_Spline(this.linesX[i], this.linesY[i]);
+                this.context.stroke();
+                this.context.closePath();
+            }
+        },
+        Cubic_B_Spline: function (x, y ) {
+            if (x.length > y.length) {
+                this.num = x.length;
+            }
+            else {
+                this.num = y.length;
+            }
+            this.new_x = this.ManagePoints(x, this.num);
+            this.new_y = this.ManagePoints(y, this.num);
+            this.Draw(this.new_x, this.new_y, this.num);
+        },
+        ManagePoints: function ( P, n ) {
+            this.new_P = P.slice(0);
+            this.new_P.push(P[n-1]);
+            this.new_P.push(P[n-1]);
+            for (let i = 0; i < n; i ++) {
+                this.e = P[i] - this.new_P[i+1];
+                this.new_P[i+1] += this.e;
+                this.new_P[n+1] = this.new_P[n];
+            }
+            return this.new_P;
+        },
+        P0: function (u) {
+            return Math.pow(1-u, 3) / 6;
+        },
+        P1: function (u) {
+            return ( 3*Math.pow(u, 3) - 6* Math.pow(u, 2) +4 ) / 6;
+        },
+        P2: function (u) {
+            return ( -3*Math.pow(u, 3) + 3* Math.pow(u, 2) + 3*u + 1 ) / 6;
+        },
+        P3: function (u) {
+            return Math.pow(u, 3) / 6;
+        },
+        Draw: function ( x, y, num ) {
+            let MAX_STEPS = 30;
+            this.B0 = new Array(MAX_STEPS);
+            this.B1 = new Array(MAX_STEPS);
+            this.B2 = new Array(MAX_STEPS);
+            this.B3 = new Array(MAX_STEPS);
+            for (let i = 0; i < MAX_STEPS; i++) {
+                let u = i / MAX_STEPS;
+                this.B0[i] = this.P0(u);
+                this.B1[i] = this.P1(u);
+                this.B2[i] = this.P2(u);
+                this.B3[i] = this.P3(u);
+            }
+            this.Q0 = {x: x[0], y: y[0]};
+            this.Q1 = {x: x[0], y: y[0]};
+            this.Q2 = {x: x[1], y: y[1]};
+            this.Q3 = {x: x[2], y: y[2]};
+
+            this.Q = {x: this.Q1.x, y: this.Q1.y};
+            this.context.moveTo(this.Q.x, this.Q.y);
+
+        for (let i = 3; i < num+2; i++) {
+            this.Q0.x = this.Q1.x; this.Q0.y = this.Q1.y;
+            this.Q1.x = this.Q2.x; this.Q1.y = this.Q2.y;
+            this.Q2.x = this.Q3.x; this.Q2.y = this.Q3.y;
+            this.Q3.x = x[i]; this.Q3.y = y[i];
+            for (let j = 0; j < MAX_STEPS; j++) {
+                this.Q.x = this.B0[j] * this.Q0.x +
+                    this.B1[j] * this.Q1.x +
+                    this.B2[j] * this.Q2.x +
+                    this.B3[j] * this.Q3.x;
+                this.Q.y = this.B0[j] * this.Q0.y +
+                    this.B1[j] * this.Q1.y +
+                    this.B2[j] * this.Q2.y +
+                    this.B3[j] * this.Q3.y;
+                this.context.lineTo(this.Q.x, this.Q.y);
+            }
+        }
+    }
+    };
+
+    DrawingPad.init(canvas, context);
+</script>
+</body>
+</html>
