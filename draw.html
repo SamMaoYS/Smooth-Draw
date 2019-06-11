@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smooth Draw</title>
+    <link rel="prefetch" href="draw.html" as="script">
+    <link rel="stylesheet" href="drawStyle.css">
+</head>
+<body>
+<div class="container" id="container">
+    <div class="canvas_container" id="canvas_container">
+        <div class="canvas_frame" id="canvas_frame"></div>
+        <canvas class="canvas" id="canvas" width="1000" height="1000"></canvas>
+        <div class="smooth_slider_container" id="smooth_slider_container">
+            <b id="smoothness">
+                <svg id="smoothness_svg">
+                    <rect id="smoothness_rect" height="40" width="120"></rect>
+                </svg>
+                SMOOTHNESS </b>
+            <label for="smooth_slider"></label>
+            <input type="range" min="0" max="14" value="7" class="smooth_slider" id="smooth_slider">
+            <span id="smooth_pointer"></span>
+            <span id="lower">0</span>
+            <span id="upper">14</span>
+        </div>
+        <div class="fluency_slider_container" id="fluency_slider_container">
+            <b id="fluency">
+                <svg id="fluency_svg">
+                    <rect id="fluency_rect" height="40" width="80"></rect>
+                </svg>
+                FLUENCY </b>
+            <label for="fluency_slider"></label>
+            <input type="range" min="0.0" max="0.8" step="0.02" value="0.60" class="fluency_slider" id="fluency_slider">
+            <span id="fluency_pointer"></span>
+            <span id="fluency_lower">0.0</span>
+            <span id="fluency_upper">0.6</span>
+        </div>
+        <div class="slider_container" id="slider_container"><label for="slider"></label><input type="range" min="0"
+                                                                                               max="300" class="slider"
+                                                                                               id="slider">
+            <div align="center" id="pointer"></div>
+        </div>
+    </div>
+</div>
+<script>
+    window.onload = () => {
+        let bannerNode = document.querySelector('[alt="www.000webhost.com"]').parentNode.parentNode;
+        bannerNode.parentNode.removeChild(bannerNode);
+    };
+
+    let container = document.getElementById('container');
+    let pointer = document.getElementById('pointer');
+    let slider_container = document.getElementById('slider_container');
+    let slider = document.getElementById('slider');
+    let smooth_slider_container = document.getElementById('smooth_slider_container');
+    let smooth_slider = document.getElementById('smooth_slider');
+    let smooth_pointer = document.getElementById('smooth_pointer');
+    let canvas_container = document.getElementById('canvas_container');
+    let lineColor = 'hsl(150, 100%, 30%)';
+    let lineShadow = 'hsl(150, 50%, 30%)';
+    let smoothness = document.getElementById('smoothness');
+    let smoothness_rect = document.getElementById('smoothness_rect');
+    let lower = document.getElementById('lower');
+    let upper = document.getElementById('upper');
+    let fluency_slider_container = document.getElementById('fluency_slider_container');
+    let fluency_slider = document.getElementById('fluency_slider');
+    let fluency_pointer = document.getElementById('fluency_pointer');
+    let fluency = document.getElementById('fluency');
+    let fluency_rect = document.getElementById('fluency_rect');
+    let fluency_lower = document.getElementById('fluency_lower');
+    let fluency_upper = document.getElementById('fluency_upper');
+
+    container.style.animation = "fadein 1s ease-in";
+    smooth_pointer.innerHTML = smooth_slider.value;
+    fluency_pointer.innerHTML = fluency_slider.value;
+    pointer.style.visibility = "hidden";
+    pointer.style.transition = "visibility 0.5s linear,opacity 0.5s linear";
+    pointer.style.opacity = "0";
+    lower.style.visibility = "hidden";
+    lower.style.opacity = "0";
+    lower.style.transition = "visibility 0.5s linear,opacity 0.5s linear";
+    upper.style.visibility = "hidden";
+    upper.style.opacity = "0";
+    upper.style.transition = "visibility 0.5s linear,opacity 0.5s linear";
+    smooth_pointer.style.visibility = "hidden";
+    smooth_pointer.style.transition = "visibility 0.5s linear,opacity 0.5s linear";
+    smooth_pointer.style.opacity = "0";
+
+    fluency_lower.style.visibility = "hidden";
+    fluency_lower.style.opacity = "0";
+    fluency_lower.style.transition = "visibility 0.5s linear,opacity 0.5s linear";
+    fluency_upper.style.visibility = "hidden";
+    fluency_upper.style.opacity = "0";
+    fluency_upper.style.transition = "visibility 0.5s linear,opacity 0.5s linear";
+    fluency_pointer.style.visibility = "hidden";
+    fluency_pointer.style.transition = "visibility 0.5s linear,opacity 0.5s linear";
+    fluency_pointer.style.opacity = "0";
+    pointer.style.left = slider.value / 3 + '%';
+    slider.oninput = function () {
+        slider_container.style.setProperty('--H', this.value);
+        slider_container.style.setProperty('--pAngle', -135 - (150 - this.value) / 5 + 'deg');
+        canvas_container.style.setProperty('--canH', this.value);
+        smooth_slider_container.style.setProperty('--sH', this.value);
+        fluency_slider_container.style.setProperty('--fH', this.value);
+        pointer.style.left = this.value / 3 + '%';
+        lineColor = 'hsl(' + this.value + ', 100%, 30%)';
+        lineShadow = 'hsl(' + this.value + ', 50%, 30%)';
+        DrawingPad.drawLine();
+    };
+    slider.onmousedown = function () {
+        slider_container.style.setProperty('--pSize', 1.2);
+        slider_container.style.setProperty('--shadowColor', 'darkslategrey');
+        pointer.style.visibility = "visible";
+        pointer.style.opacity = "1";
+    };
+    slider.ontouchstart = function () {
+        slider_container.style.setProperty('--pSize', 1.2);
+        slider_container.style.setProperty('--shadowColor', 'darkslategrey');
+        pointer.style.visibility = "visible";
+        pointer.style.opacity = "1";
+    };
+
+    slider.onmouseup = function () {
+        slider_container.style.setProperty('--shadowColor', 'goldenrod');
+        slider_container.style.setProperty('--pSize', 1);
+        pointer.style.visibility = "hidden";
+        pointer.style.opacity = "0";
+    };
+    slider.ontouchend = function () {
+        slider_container.style.setProperty('--shadowColor', 'goldenrod');
+        slider_container.style.setProperty('--pSize', 1);
+        pointer.style.visibility = "hidden";
+        pointer.style.opacity = "0";
+    };
+
+    slider.onmouseover = function () {
+        slider_container.style.setProperty('--shadowColor', 'goldenrod');
+    };
+    slider.onmouseleave = function () {
+        slider_container.style.setProperty('--shadowColor', 'darkslategrey');
+    };
+
+    smooth_pointer.style.left = 18 + smooth_pointer.value * 25 + 'px';
+    smooth_slider.oninput = function () {
+        smooth_pointer.style.left = 18 + this.value * 25 + 'px';
+        smooth_pointer.innerHTML = this.value;
+    };
+    smooth_slider.onmousedown = function () {
+        smooth_pointer.style.left = 18 + this.value * 25 + 'px';
+        smooth_slider_container.style.setProperty('--spSize', 1.2);
+        smoothness.style.backgroundColor = "hsl(var(--sH), 100%, 80%)";
+        smoothness.style.transitionDelay = "0.5s";
+        smoothness_rect.style.strokeDashoffset = "0";
+        smooth_pointer.style.visibility = "visible";
+        smooth_pointer.style.opacity = "1";
+        lower.style.visibility = "visible";
+        lower.style.opacity = "1";
+        upper.style.visibility = "visible";
+        upper.style.opacity = "1";
+    };
+    smooth_slider.ontouchstart = function () {
+        smooth_pointer.style.left = 18 + this.value * 25 + 'px';
+        smooth_slider_container.style.setProperty('--spSize', 1.2);
+        smoothness.style.backgroundColor = "hsl(var(--sH), 100%, 80%)";
+        smoothness.style.transitionDelay = "0.5s";
+        smoothness_rect.style.strokeDashoffset = "0";
+        smooth_pointer.style.visibility = "visible";
+        smooth_pointer.style.opacity = "1";
+        lower.style.visibility = "visible";
+        lower.style.opacity = "1";
+        upper.style.visibility = "visible";
+        upper.style.opacity = "1";
+    };
+    smooth_slider.onmouseup = function () {
+        smooth_slider_container.style.setProperty('--spSize', 1);
+        smoothness.style.background = "transparent";
+        smoothness_rect.style.strokeDashoffset = "300";
+        smooth_pointer.style.visibility = "hidden";
+        smooth_pointer.style.opacity = "0";
+        lower.style.visibility = "hidden";
+        lower.style.opacity = "0";
+        upper.style.visibility = "hidden";
+        upper.style.opacity = "0";
+    };
+    smooth_slider.ontouchend = function () {
+        smooth_slider_container.style.setProperty('--spSize', 1);
+        smoothness.style.background = "transparent";
+        smoothness_rect.style.strokeDashoffset = "300";
+        smooth_pointer.style.visibility = "hidden";
+        smooth_pointer.style.opacity = "0";
+        lower.style.visibility = "hidden";
+        lower.style.opacity = "0";
+        upper.style.visibility = "hidden";
+        upper.style.opacity = "0";
+    };
+
+    fluency_pointer.style.left = 17 + fluency_pointer.value * 437.5 + 'px';
+    fluency_slider.oninput = function () {
+        fluency_pointer.style.left = 17 + this.value * 437.5 + 'px';
+        fluency_pointer.innerHTML = this.value;
+    };
+    fluency_slider.onmousedown = function () {
+        fluency_pointer.style.left = 17 + this.value * 437.5 + 'px';
+        fluency_slider_container.style.setProperty('--fpSize', 1.2);
+        fluency.style.backgroundColor = "hsl(var(--fH), 100%, 80%)";
+        fluency.style.transitionDelay = "0.5s";
+        fluency_rect.style.strokeDashoffset = "0";
+        fluency_pointer.style.visibility = "visible";
+        fluency_pointer.style.opacity = "1";
+        fluency_lower.style.visibility = "visible";
+        fluency_lower.style.opacity = "1";
+        fluency_upper.style.visibility = "visible";
+        fluency_upper.style.opacity = "1";
+    };
+    fluency_slider.ontouchstart = function () {
+        fluency_pointer.style.left = 17 + this.value * 437.5 + 'px';
+        fluency_slider_container.style.setProperty('--fpSize', 1.2);
+        fluency.style.backgroundColor = "hsl(var(--fH), 100%, 80%)";
+        fluency.style.transitionDelay = "0.5s";
+        fluency_rect.style.strokeDashoffset = "0";
+        fluency_pointer.style.visibility = "visible";
+        fluency_pointer.style.opacity = "1";
+        fluency_lower.style.visibility = "visible";
+        fluency_lower.style.opacity = "1";
+        fluency_upper.style.visibility = "visible";
+        fluency_upper.style.opacity = "1";
+    };
+    fluency_slider.onmouseup = function () {
+        fluency_slider_container.style.setProperty('--fpSize', 1);
+        fluency.style.background = "transparent";
+        fluency_rect.style.strokeDashoffset = "300";
+        fluency_pointer.style.visibility = "hidden";
+        fluency_pointer.style.opacity = "0";
+        fluency_lower.style.visibility = "hidden";
+        fluency_lower.style.opacity = "0";
+        fluency_upper.style.visibility = "hidden";
+        fluency_upper.style.opacity = "0";
+    };
+    fluency_slider.ontouchend = function () {
+        fluency_slider_container.style.setProperty('--fpSize', 1);
+        fluency.style.background = "transparent";
+        fluency_rect.style.strokeDashoffset = "300";
+        fluency_pointer.style.visibility = "hidden";
+        fluency_pointer.style.opacity = "0";
+        fluency_lower.style.visibility = "hidden";
+        fluency_lower.style.opacity = "0";
+        fluency_upper.style.visibility = "hidden";
+        fluency_upper.style.opacity = "0";
+    };
+
+</script>
+<script src='http://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js'></script>
+<script>
+    const canvas = document.querySelector('canvas');
+    const context = canvas.getContext('2d');
+    canvas.antialias = true;
+    context.antialias = true;
+
+
+    let DrawingPad = {
+        init: function (canvas, context) {
+            this.canvas = canvas;
+            this.context = context;
+            this.isDown = false;
+            this.linesX = [];
+            this.linesY = [];
+            this.x = [];
+            this.y = [];
+            this.temp_x = [];
+            this.temp_y = [];
+            this.linesCount = 0;
+            this.lastMouse = null;
+            this.addCanvasEvents();
+        },
+        addCanvasEvents: function () {
+            this.canvas.addEventListener('mousedown', this.down.bind(this), false);
+            this.canvas.ontouchstart = this.touchstart.bind(this);
+            this.canvas.addEventListener('touchstart', function (e) {
+                if (e.target === canvas) {
+                    e.preventDefault();
+                }
+            }, false);
+            this.canvas.addEventListener('mousemove', this.move.bind(this), false);
+            this.canvas.ontouchmove = this.touchmove.bind(this);
+            this.canvas.addEventListener('touchmove', function (e) {
+                if (e.target === canvas) {
+                    e.preventDefault();
+                }
+            }, false);
+            this.canvas.addEventListener('mouseup', this.up.bind(this), false);
+            this.canvas.ontouchend = this.touchend.bind(this);
+            this.canvas.addEventListener('touchend', function (e) {
+                if (e.target === canvas) {
+                    e.preventDefault();
+                }
+            }, false);
+            this.canvas.addEventListener('mouseout', this.up.bind(this), false);
+        },
+        down: function (evt) {
+            this.isDown = true;
+            this.points = this.getPos(evt);
+            this.x.push(this.points.x);
+            this.y.push(this.points.y);
+            this.temp_x.push(this.points.x);
+            this.temp_y.push(this.points.y);
+            this.linesX[this.linesCount] = this.x;
+            this.linesY[this.linesCount] = this.y;
+            this.lastMouse = this.points;
+            this.drawLine();
+        },
+        touchstart: function (evt) {
+            this.isDown = true;
+            this.points = this.getTouchPos(evt);
+            this.x.push(this.points.x);
+            this.y.push(this.points.y);
+            this.temp_x.push(this.points.x);
+            this.temp_y.push(this.points.y);
+            this.linesX[this.linesCount] = this.x;
+            this.linesY[this.linesCount] = this.y;
+            this.lastMouse = this.points;
+            this.drawLine();
+        },
+        move: function (evt) {
+            if (!this.isDown) return;
+            this.points = this.getPos(evt);
+            this.temp_x.push(this.points.x);
+            this.temp_y.push(this.points.y);
+            this.dist = Math.pow((this.points.x - this.lastMouse.x), 2) + Math.pow((this.points.y - this.lastMouse.y), 2);
+            if (this.dist >= smooth_slider.value) {
+                this.x.push(this.points.x);
+                this.y.push(this.points.y);
+            }
+            this.linesX[this.linesCount] = this.temp_x;
+            this.linesY[this.linesCount] = this.temp_y;
+            this.lastMouse = this.points;
+            this.drawLine();
+        },
+        touchmove: function (evt) {
+            if (!this.isDown) return;
+            this.points = this.getTouchPos(evt);
+            this.temp_x.push(this.points.x);
+            this.temp_y.push(this.points.y);
+            this.dist = Math.pow((this.points.x - this.lastMouse.x), 2) + Math.pow((this.points.y - this.lastMouse.y), 2);
+            if (this.dist >= smooth_slider.value) {
+                this.x.push(this.points.x);
+                this.y.push(this.points.y);
+            }
+            this.linesX[this.linesCount] = this.temp_x;
+            this.linesY[this.linesCount] = this.temp_y;
+            this.lastMouse = this.points;
+            this.drawLine();
+        },
+        up: function (evt) {
+            if (!this.isDown) return;
+            this.points = this.getPos(evt);
+            this.x.push(this.points.x);
+            this.y.push(this.points.y);
+            this.linesX[this.linesCount] = this.x;
+            this.linesY[this.linesCount] = this.y;
+            this.drawLine();
+            this.linesCount++;
+            this.isDown = false;
+            this.x = [];
+            this.y = [];
+            this.temp_x = [];
+            this.temp_y = [];
+            this.lastMouse = null;
+        },
+        touchend: function (evt) {
+            if (!this.isDown) return;
+            this.points = this.getTouchPos(evt);
+            this.x.push(this.points.x);
+            this.y.push(this.points.y);
+            this.linesX[this.linesCount] = this.x;
+            this.linesY[this.linesCount] = this.y;
+            this.drawLine();
+            this.linesCount++;
+            this.isDown = false;
+            this.x = [];
+            this.y = [];
+            this.temp_x = [];
+            this.temp_y = [];
+            this.lastMouse = null;
+        },
+        getPos: function (evt) {
+            return {
+                x: (evt.clientX - canvas.getBoundingClientRect().left) * (canvas.width / canvas.getBoundingClientRect().width),
+                y: (evt.clientY - canvas.getBoundingClientRect().top) * (canvas.height / canvas.getBoundingClientRect().height)
+            }
+        },
+        getTouchPos: function (evt) {
+            let touchPos = evt.changedTouches[0];
+            return {
+                x: (touchPos.clientX - canvas.getBoundingClientRect().left) * (canvas.width / canvas.getBoundingClientRect().width),
+                y: (touchPos.clientY - canvas.getBoundingClientRect().top) * (canvas.height / canvas.getBoundingClientRect().height)
+            }
+        },
+        drawLine: function () {
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.context.antialias = true;
+
+            this.context.strokeStyle = lineColor;
+            this.context.lineWidth = 7;
+            this.context.lineJoin = 'round';
+            this.context.lineCap = 'round';
+            this.context.shadowBlur = 3;
+            this.context.shadowColor = lineShadow;
+            for (let i = 0; i <= this.linesCount; i++) {
+                this.context.beginPath();
+                this.Cubic_B_Spline(this.linesX[i], this.linesY[i]);
+                this.context.stroke();
+                this.context.closePath();
+            }
+        },
+        drawRawLine: function () {
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.context.antialias = true;
+            this.context.strokeStyle = lineColor;
+            this.context.lineWidth = 7;
+            this.context.lineJoin = 'round';
+            this.context.lineCap = 'round';
+            this.context.shadowBlur = 3;
+            this.context.shadowColor = lineShadow;
+            for (let i = 0; i <= this.linesCount; i++) {
+                this.context.beginPath();
+                this.context.moveTo(this.linesX[i][0], this.linesY[i][0]);
+                let n = this.linesX[i].length;
+                for (let j = 1; j < n; j++) {
+                    this.context.lineTo(this.linesX[i][j], this.linesY[i][j]);
+                }
+                this.context.stroke();
+                this.context.closePath();
+            }
+        },
+        Cubic_B_Spline: function (x, y) {
+            if (x.length > y.length) {
+                this.num = x.length;
+            } else {
+                this.num = y.length;
+            }
+            this.new_x = this.ManagePoints(x, this.num);
+            this.new_y = this.ManagePoints(y, this.num);
+            this.Draw(this.new_x, this.new_y, this.num);
+        },
+        ManagePoints: function (P, n) {
+            this.new_P = P.slice(0);
+            this.new_P.push(P[n - 1]);
+            this.new_P.push(P[n - 1]);
+            for (let i = 0; i < n; i++) {
+                this.e = P[i] - this.new_P[i + 1];
+                this.new_P[i + 1] += this.e;
+                this.new_P[n + 1] = this.new_P[n];
+            }
+
+            for (let i = 0; i < n; ++i) {
+                let j = n - i - 2;
+                let p0 = this.new_P[j];
+                let p1 = this.new_P[j + 1];
+                let a = fluency_slider.value;
+                this.new_P[j] = p0 * (1 - a) + p1 * a;
+            }
+
+            return this.new_P;
+        },
+        P0: function (u) {
+            return Math.pow(1 - u, 3) / 6;
+        },
+        P1: function (u) {
+            return (3 * Math.pow(u, 3) - 6 * Math.pow(u, 2) + 4) / 6;
+        },
+        P2: function (u) {
+            return (-3 * Math.pow(u, 3) + 3 * Math.pow(u, 2) + 3 * u + 1) / 6;
+        },
+        P3: function (u) {
+            return Math.pow(u, 3) / 6;
+        },
+        Draw: function (x, y, num) {
+            let MAX_STEPS = 30;
+            this.B0 = new Array(MAX_STEPS);
+            this.B1 = new Array(MAX_STEPS);
+            this.B2 = new Array(MAX_STEPS);
+            this.B3 = new Array(MAX_STEPS);
+            for (let i = 0; i < MAX_STEPS; i++) {
+                let u = i / MAX_STEPS;
+                this.B0[i] = this.P0(u);
+                this.B1[i] = this.P1(u);
+                this.B2[i] = this.P2(u);
+                this.B3[i] = this.P3(u);
+            }
+            this.Q0 = {x: x[0], y: y[0]};
+            this.Q1 = {x: x[0], y: y[0]};
+            this.Q2 = {x: x[1], y: y[1]};
+            this.Q3 = {x: x[2], y: y[2]};
+
+            this.Q = {x: this.Q1.x, y: this.Q1.y};
+            this.context.moveTo(this.Q.x, this.Q.y);
+
+            for (let i = 3; i < num + 2; i++) {
+                this.Q0.x = this.Q1.x;
+                this.Q0.y = this.Q1.y;
+                this.Q1.x = this.Q2.x;
+                this.Q1.y = this.Q2.y;
+                this.Q2.x = this.Q3.x;
+                this.Q2.y = this.Q3.y;
+                this.Q3.x = x[i];
+                this.Q3.y = y[i];
+                this.context.moveTo(this.Q.x, this.Q.y);
+                for (let j = 0; j < MAX_STEPS; j++) {
+                    this.Q.x = this.B0[j] * this.Q0.x +
+                        this.B1[j] * this.Q1.x +
+                        this.B2[j] * this.Q2.x +
+                        this.B3[j] * this.Q3.x;
+                    this.Q.y = this.B0[j] * this.Q0.y +
+                        this.B1[j] * this.Q1.y +
+                        this.B2[j] * this.Q2.y +
+                        this.B3[j] * this.Q3.y;
+                    this.context.lineTo(this.Q.x, this.Q.y);
+                }
+            }
+        }
+    };
+
+    DrawingPad.init(canvas, context);
+</script>
+</body>
+</html>

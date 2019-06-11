@@ -1,0 +1,137 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(to bottom, hsl(0, 76%, 24%), hsl(0, 76%, 32%), hsl(10, 76%, 32%),hsl(10, 80%, 35%),hsl(20, 80%, 35%));
+}
+.load_container{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 50%;
+    height: 30%;
+    margin: auto;
+}
+.loading{
+    width: 60%;
+    height: 40%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#dot1, #dot2, #dot3, #dot4, #dot5{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: hsl(0, 30%, 82%);
+    opacity: 0;
+    box-shadow: 0 20px 15px -6px black;
+    animation: loading 3s infinite ease-in-out;
+}
+
+#dot1{
+    top: 60%;
+    left: 30%;
+    transform: translate(-30%, -60%);
+    position: absolute;
+    animation-delay: 500ms;
+}
+#dot2{
+    top: 60%;
+    left: 40%;
+    transform: translate(-40%, -60%);
+    position: absolute;
+    animation-delay: 400ms;
+}
+#dot3{
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -60%);
+    position: absolute;
+    animation-delay: 300ms;
+}
+#dot4{
+    top: 60%;
+    left: 60%;
+    transform: translate(-60%, -60%);
+    position: absolute;
+    animation-delay: 200ms;
+}
+#dot5{
+    top: 60%;
+    left: 70%;
+    transform: translate(-70%, -60%);
+    position: absolute;
+    animation-delay: 100ms;
+}
+
+@keyframes loading {
+    0% {
+        opacity: 0;
+        transform: translateX(-215px);
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(-15px);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(185px);
+    }
+}
+
+.text_container{
+    height: 100px;
+    width: 400px;
+    left: 50%;
+    top: 20%;
+    transform: translate(-50%, -20%);
+    position: absolute;
+}
+
+#text_content{
+    font-size: 100px;
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -80%);
+    color: transparent;
+    -webkit-text-stroke: 2px hsl(0, 30%, 82%);
+    font-family: 'cardo', serif;
+}
+
+#text_content:before{
+    text-shadow: 0 10px 15px hsl(0, 0%, 8%);
+    content: attr(data-text);
+    position: absolute;
+    animation: load_text 3s infinite ease-in-out;
+}
+
+@keyframes load_text {
+    0% {
+        -webkit-clip-path: circle(0% at 0% 50%);
+    }
+    50% {
+        -webkit-clip-path: circle(150% at 0% 50%);
+        color: hsl(0, 30%, 82%);
+    }
+    100% {
+        -webkit-clip-path: circle(0% at 150% 50%);
+        color: hsl(0, 30%, 82%);
+    }
+}
+
+@keyframes fadeout {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+

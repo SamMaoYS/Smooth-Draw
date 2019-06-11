@@ -1,0 +1,370 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background: whitesmoke;
+    cursor: auto;
+}
+.container{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}
+.canvas_container{
+    --canH: 150;
+    --canS: 50%;
+    --canL: 40%;
+    --canColor: linear-gradient(to left, hsl(var(--canH), var(--canS), var(--canL)), hsl(var(--canH), 80%, 50%), hsl(var(--canH), 100%, 70%));
+}
+.canvas{
+    height: 80%;
+    width:95%;
+    background: whitesmoke;
+    position: absolute;
+    box-shadow: 0 0 0 5px hsl(var(--canH), 60%, 30%);
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+.canvas_frame {
+    height: 85%;
+    width: 100%;
+    box-shadow: 12px 12px 13px -7px black, 0 0 0 5px hsl(var(--canH), 60%, 30%);;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background: var(--canColor);
+}
+
+.slider_container {
+    width: 350px;
+    height: 20px;
+    position: absolute;
+    margin: auto;
+    top: 80.6%;
+    bottom: 0;
+    right: 0;
+    left: 95%;
+    transform: translate(-95%, -80.6%);
+    --H: 150;
+    --S: 100%;
+    --L: 30%;
+    --color: hsl(var(--H), var(--S), var(--L));
+    --pSize: 1;
+    --shadowColor: darkslategrey;
+    --pAngle: -135deg;
+}
+
+.slider {
+    width: 100%;
+    height: 7px;
+    -webkit-appearance: none;
+    background: linear-gradient(to right,
+    hsl(0, var(--S), var(--L)),
+    hsl(30, var(--S), var(--L)),
+    hsl(60, var(--S), var(--L)),
+    hsl(120, var(--S), var(--L)),
+    hsl(150, var(--S), var(--L)),
+    hsl(180, var(--S), var(--L)),
+    hsl(210, var(--S), var(--L)),
+    hsl(240, var(--S), var(--L)),
+    hsl(270, var(--S), var(--L)),
+    hsl(300, var(--S), var(--L))
+    );
+    border-radius: 7px;
+    box-shadow: 0 0 0 2px grey;
+    outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    background: var(--color);
+    box-shadow: 0 0 0 3px var(--shadowColor);
+    border-radius: 50%;
+    cursor: pointer;
+    outline: none;
+}
+
+.slider::-webkit-slider-thumb:hover {
+    box-shadow: 0 0 0 3px var(--color),
+    0 0 0 6px var(--shadowColor);
+}
+
+.slider:active::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px var(--color),
+    0 0 0 6px var(--shadowColor);
+}
+
+#pointer{
+    background-color: var(--color);
+    width: 20px;
+    height: 20px;
+    border-radius: 0 50% 50% 50%;
+    transform: rotate(var(--pAngle)) scale(var(--pSize));
+    position: relative;
+    margin-top: -12%;
+    margin-left: -2%;
+    left: 170px;
+    box-shadow: 0 0 0 3px var(--shadowColor), -3px 10px 15px -6px black;
+}
+
+.smooth_slider_container, .fluency_slider_container {
+    width: 400px;
+    height: 40px;
+    position: absolute;
+    font-weight: bold;
+    margin: auto;
+}
+.smooth_slider_container {
+    top: 80%;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    transform: translate(0, -80%);
+    --sH: 150;
+    --sS: 100%;
+    --sL: 30%;
+    --sColor: hsl(var(--sH), var(--sS), var(--sL));
+    --spSize: 1;
+}
+.fluency_slider_container {
+    top: 80%;
+    bottom: 0;
+    right: 95%;
+    left: 0;
+    transform: translate(5%, -80%);
+    --fH: 150;
+    --fS: 100%;
+    --fL: 30%;
+    --fColor: hsl(var(--fH), var(--fS), var(--fL));
+    --fpSize: 1;
+}
+
+.smooth_slider, .fluency_slider {
+    width: 350px;
+    height: 7px;
+    position: absolute;
+    -webkit-appearance: none;
+    border-radius: 7px;
+    box-shadow: 0 0 0 2px grey;
+    outline: none;
+    top: 90%;
+    bottom: 0;
+    left: 50%;
+    right: 0;
+    transform: translate(-50%, -90%);
+}
+.smooth_slider{
+    background: var(--sColor);
+}
+
+.fluency_slider{
+    background: var(--fColor);
+}
+
+.smooth_slider::-webkit-slider-thumb, .fluency_slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    outline: none;
+}
+.smooth_slider::-webkit-slider-thumb{
+    background: hsl(var(--sH), 100%, 40%);
+    box-shadow: 0 0 0 3px hsl(var(--sH), 30%, 30%);
+}
+.fluency_slider::-webkit-slider-thumb{
+    background: hsl(var(--fH), 100%, 40%);
+    box-shadow: 0 0 0 3px hsl(var(--fH), 30%, 30%);
+}
+
+
+.smooth_slider::-webkit-slider-thumb:hover {
+    box-shadow: 0 0 0 3px hsl(var(--sH), 100%, 40%),
+    0 0 0 6px hsl(var(--sH), 30%, 30%);
+}
+.fluency_slider::-webkit-slider-thumb:hover {
+    box-shadow: 0 0 0 3px hsl(var(--fH), 100%, 40%),
+    0 0 0 6px hsl(var(--fH), 30%, 30%);
+}
+
+.smooth_slider:active::-webkit-slider-thumb {
+    box-shadow: 0 0 0 5px hsl(var(--sH), 900%, 60%),
+    0 0 0 6px hsl(var(--sH), 30%, 30%);
+}
+.fluency_slider:active::-webkit-slider-thumb {
+    box-shadow: 0 0 0 5px hsl(var(--fH), 900%, 60%),
+    0 0 0 6px hsl(var(--fH), 30%, 30%);
+}
+
+#smooth_pointer, #fluency_pointer{
+    border-radius: 10% 10% 10% 10%;
+    position: absolute;
+    font-size: 18px;
+    text-align: center;
+    line-height: 20px;
+    top: 140%;
+    bottom: 0;
+    left: 50%;
+    right: 0;
+    transform: translate(-50%, -140%);
+}
+#smooth_pointer{
+    width: 20px;
+    height: 20px;
+    background-color: hsl(var(--sH), 100%, 80%);
+    transform: scale(var(--spSize));
+    box-shadow: 0 0 0 3px hsl(var(--sH), 100%, 20%);
+    color: hsl(var(--sH), 100%, 20%);
+}
+#fluency_pointer{
+    width: 35px;
+    height: 20px;
+    background-color: hsl(var(--fH), 100%, 80%);
+    transform: scale(var(--fpSize));
+    box-shadow: 0 0 0 3px hsl(var(--fH), 100%, 20%);
+    color: hsl(var(--fH), 100%, 20%);
+}
+
+#smoothness, #fluency{
+    font-family: "Times New Roman", Times, serif;
+    position: absolute;
+    vertical-align: middle;
+    border-radius: 20% 20% 20% 20%;
+    text-align: center;
+    line-height: 20px;
+    font-size: 14px;
+    letter-spacing: 1px;
+    transition: 0.5s;
+    top: 10%;
+    bottom: 0;
+    left: 50%;
+    right: 0;
+    transform: translate(-50%, -10%);
+}
+#smoothness{
+    height: 20px;
+    width: 120px;
+    color: hsl(var(--sH), 70%, 20%);
+}
+#fluency{
+    height: 20px;
+    width: 85px;
+    color: hsl(var(--fH), 70%, 20%);
+
+}
+
+#smoothness:hover{
+    background-color: hsl(var(--sH), 100%, 80%);
+    transition-delay: 0.5s;
+}
+#fluency:hover{
+    background-color: hsl(var(--fH), 100%, 80%);
+    transition-delay: 0.5s;
+}
+
+#smoothness_svg, #smoothness_rect, #fluency_svg, #fluency_rect{
+    position: absolute;
+    border-radius: 20% 20% 20% 20%;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    fill: transparent;
+}
+
+#smoothness_rect, #fluency_rect{
+    stroke-dasharray: 300;
+    stroke-dashoffset: 300;
+    stroke-width: 4;
+    transition: 1s;
+}
+#smoothness_rect{
+    stroke: hsl(var(--sH), 70%, 20%);
+}
+#fluency_rect{
+    stroke: hsl(var(--fH), 70%, 20%);
+}
+
+#smoothness_rect:hover, #fluency_rect:hover{
+    stroke-dashoffset: 0;
+}
+
+#lower, #upper, #fluency_lower, #fluency_upper{
+    text-align: center;
+    border-radius: 50% 50% 50% 50%;
+    font-weight: bold;
+    font-size: 18px;
+    font-family: "Times New Roman", Times, serif;
+    position: absolute;
+}
+
+#lower{
+    height: 20px;
+    width: 20px;
+    background: hsl(var(--sH), 100%, 80%);
+    box-shadow: 0 0 0 3px hsl(var(--sH), 100%, 20%);
+    color: hsl(var(--sH), 100%, 20%);
+    top: 130%;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    transform: translateY(-130%);
+}
+
+#upper{
+    height: 20px;
+    width: 20px;
+    background: hsl(var(--sH), 100%, 80%);
+    box-shadow: 0 0 0 3px hsl(var(--sH), 100%, 20%);
+    color: hsl(var(--sH), 100%, 20%);
+    top: 130%;
+    bottom: 0;
+    right: 0;
+    left: 101%;
+    transform: translate(-101%, -130%);
+}
+#fluency_lower{
+    height: 20px;
+    width: 30px;
+    background: hsl(var(--fH), 100%, 80%);
+    box-shadow: 0 0 0 3px hsl(var(--fH), 100%, 20%);
+    color: hsl(var(--fH), 100%, 20%);
+    top: 130%;
+    bottom: 0;
+    right: 0;
+    left: -2%;
+    transform: translate(2%, -130%);
+}
+
+#fluency_upper{
+    height: 20px;
+    width: 30px;
+    background: hsl(var(--fH), 100%, 80%);
+    box-shadow: 0 0 0 3px hsl(var(--fH), 100%, 20%);
+    color: hsl(var(--fH), 100%, 20%);
+    top: 130%;
+    bottom: 0;
+    right: 0;
+    left: 103%;
+    transform: translate(-103%, -130%);
+}
+
+@keyframes fadein {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
